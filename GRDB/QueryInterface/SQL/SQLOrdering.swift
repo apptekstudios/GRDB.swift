@@ -26,6 +26,7 @@ public protocol SQLOrderingTerm {
 enum SQLOrdering: SQLOrderingTerm {
     case asc(SQLExpression)
     case desc(SQLExpression)
+	case isNull(SQLExpression)
     #if GRDBCUSTOMSQLITE
     case ascNullsLast(SQLExpression)
     case descNullsFirst(SQLExpression)
@@ -37,6 +38,8 @@ enum SQLOrdering: SQLOrderingTerm {
             return SQLOrdering.desc(expression)
         case .desc(let expression):
             return SQLOrdering.asc(expression)
+		case .isNull(let expression):
+			return SQLOrdering.isNull(expression)
             #if GRDBCUSTOMSQLITE
         case .ascNullsLast(let expression):
             return SQLOrdering.descNullsFirst(expression)
@@ -52,6 +55,8 @@ enum SQLOrdering: SQLOrderingTerm {
             return expression.expressionSQL(&context, wrappedInParenthesis: false) + " ASC"
         case .desc(let expression):
             return expression.expressionSQL(&context, wrappedInParenthesis: false) + " DESC"
+		case .isNull(let expression):
+			return expression.expressionSQL(&context, wrappedInParenthesis: false) + " IS NULL"
             #if GRDBCUSTOMSQLITE
         case .ascNullsLast(let expression):
             return expression.expressionSQL(&context, wrappedInParenthesis: false) + " ASC NULLS LAST"
@@ -67,6 +72,8 @@ enum SQLOrdering: SQLOrderingTerm {
             return SQLOrdering.asc(expression.qualifiedExpression(with: alias))
         case .desc(let expression):
             return SQLOrdering.desc(expression.qualifiedExpression(with: alias))
+		case .isNull(let expression):
+			return SQLOrdering.isNull(expression.qualifiedExpression(with: alias))
             #if GRDBCUSTOMSQLITE
         case .ascNullsLast(let expression):
             return SQLOrdering.ascNullsLast(expression.qualifiedExpression(with: alias))
